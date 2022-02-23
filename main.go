@@ -1,17 +1,28 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
+	"log"
+	"net/http"
+	"time"
 )
 
 var db, err = gorm.Open(mysql.New(mysql.Config{
 	DSN: "root:rootpass@tcp(127.0.0.1:3306)/gift-finder?charset=utf8&parseTime=True&loc=Local",
 }), &gorm.Config{})
 
+type GormModel struct {
+	ID        uint       `gorm:"primary_key"`
+	CreatedAt time.Time  `json:"-"`
+	UpdatedAt time.Time  `json:"-"`
+	DeletedAt *time.Time `json:"-";sql:"index"`
+}
+
 type Gift struct {
-	gorm.Model
+	GormModel
 	Name     string `gorm:"not null;size:255"`
 	Gender   string `gorm:"not null;size:255"` // male|female|unisex
 	AgeStart uint8  `gorm:"not null"`
@@ -22,12 +33,12 @@ type Gift struct {
 }
 
 type Shop struct {
-	gorm.Model
+	GormModel
 	Name string `gorm:"not null;size:255"`
 }
 
 type Product struct {
-	gorm.Model
+	GormModel
 	GiftID uint    `gorm:"not null"`
 	ShopID uint    `gorm:"not null"`
 	Name   string  `gorm:"not null;size:255"`
@@ -37,14 +48,39 @@ type Product struct {
 }
 
 type Image struct {
-	gorm.Model
+	GormModel
 	GiftID uint   `gorm:"not null"`
 	Url    string `gorm:"not null"`
 }
 
 type Hobby struct {
-	gorm.Model
+	GormModel
 	Name string `gorm:"not null;size:255"`
+}
+
+func handler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusNotFound)
+	fmt.Fprint(w, "{\"error\":\"Not Found\"}")
+}
+
+func hobbiesHandler(w http.ResponseWriter, r *http.Request) {
+	var hobbies []Hobby
+	w.Header().Set("Content-Type", "application/json")
+
+	if r.Method != "GET" {
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		fmt.Fprint(w, "{\"error\":\"Only GET methods are supported\"}")
+		return
+	}
+
+	result := db.Find(&hobbies)
+	if result.Error != nil {
+		json.NewEncoder(w).Encode(map[string]string{"error": result.Error.Error()})
+		return
+	}
+
+	json.NewEncoder(w).Encode(hobbies)
 }
 
 func main() {
@@ -53,5 +89,8 @@ func main() {
 	}
 
 	db.AutoMigrate(&Gift{}, &Shop{}, &Product{}, &Image{}, &Hobby{})
-	fmt.Printf("Gift finder")
+
+	http.HandleFunc("/", handler) // each request calls handler
+	http.HandleFunc("/hobbies", hobbiesHandler)
+	log.Fatal(http.ListenAndServe("localhost:8200", nil))
 }
