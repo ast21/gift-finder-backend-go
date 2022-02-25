@@ -3,10 +3,13 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/thoas/go-funk"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"log"
 	"net/http"
+	"strconv"
+	"strings"
 	"time"
 )
 
@@ -29,7 +32,7 @@ type Gift struct {
 	AgeEnd   uint8  `gorm:"not null"`
 	Product  Product
 	Images   []Image
-	Hobbies  []Hobby `gorm:"many2many:gift_has_hobbies;"`
+	Hobbies  []*Hobby `gorm:"many2many:gift_has_hobbies;"`
 }
 
 type Shop struct {
@@ -55,12 +58,14 @@ type Image struct {
 
 type Hobby struct {
 	GormModel
-	Name string `gorm:"not null;size:255"`
+	Name  string  `gorm:"not null;size:255"`
+	Gifts []*Gift `gorm:"many2many:gift_has_hobbies;"`
 }
 
 type GiftRequestBody struct {
-	Gender string
-	Age    string
+	HobbyIds []int
+	Gender   string
+	Age      string
 }
 
 func handler(w http.ResponseWriter, r *http.Request) {
@@ -81,6 +86,7 @@ func hobbiesHandler(w http.ResponseWriter, r *http.Request) {
 
 	result := db.Find(&hobbies)
 	if result.Error != nil {
+		w.WriteHeader(500)
 		json.NewEncoder(w).Encode(map[string]string{"error": result.Error.Error()})
 		return
 	}
@@ -89,7 +95,7 @@ func hobbiesHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func giftsHandler(w http.ResponseWriter, r *http.Request) {
-	var gifts []Gift
+	var hobbies []Hobby
 	w.Header().Set("Content-Type", "application/json")
 
 	if r.Method != "GET" {
@@ -98,18 +104,57 @@ func giftsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	HobbyIds, err := stringToNumbers(r.URL.Query().Get("hobby_ids"))
+	if err != nil {
+		w.WriteHeader(400)
+		json.NewEncoder(w).Encode(map[string]string{"error": err.Error()})
+		return
+	}
+
 	req := GiftRequestBody{
+		HobbyIds,
 		r.URL.Query().Get("gender"),
 		r.URL.Query().Get("age"),
 	}
 
-	result := db.Preload("Product").Preload("Product.Shop").Preload("Images").Preload("Hobbies").Where("gender = ?", req.Gender).Where("age_start <= ? AND age_end >= ?", req.Age, req.Age).Find(&gifts)
-	if result.Error != nil {
-		json.NewEncoder(w).Encode(map[string]string{"error": result.Error.Error()})
-		return
+	if len(req.HobbyIds) > 0 {
+		result := db.Preload("Gifts", "gender = ? AND age_start <= ? AND age_end >= ?", req.Gender, req.Age, req.Age).Preload("Gifts.Product").Preload("Gifts.Product.Shop").Preload("Gifts.Images").Preload("Gifts.Hobbies").Find(&hobbies, "id", req.HobbyIds)
+		if result.Error != nil {
+			w.WriteHeader(500)
+			json.NewEncoder(w).Encode(map[string]string{"error": result.Error.Error()})
+			return
+		}
+	} else {
+		result := db.Preload("Gifts", "gender = ? AND age_start <= ? AND age_end >= ?", req.Gender, req.Age, req.Age).Preload("Gifts.Product").Preload("Gifts.Product.Shop").Preload("Gifts.Images").Preload("Gifts.Hobbies").Find(&hobbies)
+		if result.Error != nil {
+			w.WriteHeader(500)
+			json.NewEncoder(w).Encode(map[string]string{"error": result.Error.Error()})
+			return
+		}
 	}
 
+	gifts := funk.FlatMap(hobbies, func(x Hobby) []*Gift {
+		return x.Gifts
+	})
+	gifts = funk.Uniq(gifts)
+
 	json.NewEncoder(w).Encode(gifts)
+}
+
+func stringToNumbers(str string) ([]int, error) {
+	if str == "" {
+		return []int{}, err
+	}
+	split := strings.Split(str, ",")
+	var numbers []int
+	for i := 0; i < len(split); i++ {
+		number, err := strconv.Atoi(split[i])
+		if err != nil {
+			return []int{}, err
+		}
+		numbers = append(numbers, number)
+	}
+	return numbers, err
 }
 
 func main() {
