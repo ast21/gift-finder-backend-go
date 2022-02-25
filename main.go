@@ -58,6 +58,11 @@ type Hobby struct {
 	Name string `gorm:"not null;size:255"`
 }
 
+type GiftRequestBody struct {
+	Gender string
+	Age    string
+}
+
 func handler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusNotFound)
@@ -83,6 +88,30 @@ func hobbiesHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(hobbies)
 }
 
+func giftsHandler(w http.ResponseWriter, r *http.Request) {
+	var gifts []Gift
+	w.Header().Set("Content-Type", "application/json")
+
+	if r.Method != "GET" {
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		fmt.Fprint(w, "{\"error\":\"Only POST methods are supported\"}")
+		return
+	}
+
+	req := GiftRequestBody{
+		r.URL.Query().Get("gender"),
+		r.URL.Query().Get("age"),
+	}
+
+	result := db.Preload("Product").Preload("Product.Shop").Preload("Images").Preload("Hobbies").Where("gender = ?", req.Gender).Where("age_start <= ? AND age_end >= ?", req.Age, req.Age).Find(&gifts)
+	if result.Error != nil {
+		json.NewEncoder(w).Encode(map[string]string{"error": result.Error.Error()})
+		return
+	}
+
+	json.NewEncoder(w).Encode(gifts)
+}
+
 func main() {
 	if err != nil {
 		panic("Failed to connect database")
@@ -92,5 +121,6 @@ func main() {
 
 	http.HandleFunc("/", handler) // each request calls handler
 	http.HandleFunc("/hobbies", hobbiesHandler)
+	http.HandleFunc("/gifts", giftsHandler)
 	log.Fatal(http.ListenAndServe("localhost:8200", nil))
 }
