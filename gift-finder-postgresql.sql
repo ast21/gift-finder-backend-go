@@ -1,4 +1,4 @@
-INSERT INTO `hobbies` (`created_at`, `updated_at`, `deleted_at`, `name`) VALUES
+INSERT INTO "hobbies" ("created_at", "updated_at", "deleted_at", "name") VALUES
     (now(), now(), NULL, 'Автомобили'),
     (now(), now(), NULL, 'Ароматерапия'),
     (now(), now(), NULL, 'Астрономия'),
@@ -9,7 +9,7 @@ INSERT INTO `hobbies` (`created_at`, `updated_at`, `deleted_at`, `name`) VALUES
     (now(), now(), NULL, 'Батут'),
     (now(), now(), NULL, 'Бег'),
     (now(), now(), NULL, 'Бильярд'),
-    (now(), now(), NULL, 'Блоггерство'),                                                                             (now(), now(), NULL, 'Программирование'),
+    (now(), now(), NULL, 'Блоггерство'),
     (now(), now(), NULL, 'Бодиарт'),
     (now(), now(), NULL, 'Боевые искусства (борьба, бокс, рукопашный бой, тайский бокс,…)'),
     (now(), now(), NULL, 'Бонсай'),
@@ -25,7 +25,7 @@ INSERT INTO `hobbies` (`created_at`, `updated_at`, `deleted_at`, `name`) VALUES
     (now(), now(), NULL, 'Горные лыжи'),
     (now(), now(), NULL, 'Граффити'),
     (now(), now(), NULL, 'Дайвинг'),
-    (now(), now(), NULL, 'Дартс'),                                                                             (now(), now(), NULL, 'Программирование'),
+    (now(), now(), NULL, 'Дартс'),
     (now(), now(), NULL, 'Декупаж'),
     (now(), now(), NULL, 'Дерево (выжигание и резьба)'),
     (now(), now(), NULL, 'Диггерство'),
@@ -41,7 +41,7 @@ INSERT INTO `hobbies` (`created_at`, `updated_at`, `deleted_at`, `name`) VALUES
     (now(), now(), NULL, 'Изучение новых компьютерных программ'),
     (now(), now(), NULL, 'Икебана'),
     (now(), now(), NULL, 'Иностранные языки'),
-    (now(), now(), NULL, 'Йога'),                                                                             (now(), now(), NULL, 'Программирование'),
+    (now(), now(), NULL, 'Йога'),
     (now(), now(), NULL, 'Исторические реконструкции'),
     (now(), now(), NULL, 'Кайтинг'),
     (now(), now(), NULL, 'Каллиграфия'),
@@ -57,7 +57,7 @@ INSERT INTO `hobbies` (`created_at`, `updated_at`, `deleted_at`, `name`) VALUES
     (now(), now(), NULL, 'Косплей'),
     (now(), now(), NULL, 'Кроссворды (составление и разгадывание)'),
     (now(), now(), NULL, 'Кулинария'),
-    (now(), now(), NULL, 'Лазертаг'),                                                                             (now(), now(), NULL, 'Программирование'),
+    (now(), now(), NULL, 'Лазертаг'),
     (now(), now(), NULL, 'Лепка'),
     (now(), now(), NULL, 'Лошади (верховая езда, уход)'),
     (now(), now(), NULL, 'Лыжи'),
@@ -73,7 +73,7 @@ INSERT INTO `hobbies` (`created_at`, `updated_at`, `deleted_at`, `name`) VALUES
     (now(), now(), NULL, 'Паззлы'),
     (now(), now(), NULL, 'Парашютный спорт'),
     (now(), now(), NULL, 'Паркур'),
-    (now(), now(), NULL, 'Пейнтбол'),                                                                             (now(), now(), NULL, 'Программирование'),
+    (now(), now(), NULL, 'Пейнтбол'),
     (now(), now(), NULL, 'Пение и караоке'),
     (now(), now(), NULL, 'Переписка по обычной почте'),
     (now(), now(), NULL, 'Петанк'),
@@ -89,7 +89,7 @@ INSERT INTO `hobbies` (`created_at`, `updated_at`, `deleted_at`, `name`) VALUES
     (now(), now(), NULL, 'Путешествия (другие страны, альпинизм, походы)'),
     (now(), now(), NULL, 'Пчеловодство'),
     (now(), now(), NULL, 'Радиовещание (подкасты, интернет-радиостанции, радиопередатчики)'),
-    (now(), now(), NULL, 'Разработка сайтов'),                                                                             (now(), now(), NULL, 'Программирование'),
+    (now(), now(), NULL, 'Разработка сайтов'),
     (now(), now(), NULL, 'Рисование (акварель, холст, бумага, карандаши, стекло, гуашь и т.п.)'),
     (now(), now(), NULL, 'Рисование по номерам'),
     (now(), now(), NULL, 'Робототехника'),
@@ -105,7 +105,7 @@ INSERT INTO `hobbies` (`created_at`, `updated_at`, `deleted_at`, `name`) VALUES
     (now(), now(), NULL, 'Спорт-фанат'),
     (now(), now(), NULL, 'Стекло (изготовление украшений и предметов интерьера)'),
     (now(), now(), NULL, 'Страйкбол'),
-    (now(), now(), NULL, 'Стрельба'),                                                                             (now(), now(), NULL, 'Программирование'),
+    (now(), now(), NULL, 'Стрельба'),
     (now(), now(), NULL, 'Танцы и балет'),
     (now(), now(), NULL, 'Татуировки и пирсинг'),
     (now(), now(), NULL, 'Театр (театральный кружок)'),
@@ -117,22 +117,23 @@ INSERT INTO `hobbies` (`created_at`, `updated_at`, `deleted_at`, `name`) VALUES
     (now(), now(), NULL, 'Футбол'),
     (now(), now(), NULL, 'Шитье и вышивание');
 
-INSERT INTO `shops` (`created_at`, `updated_at`, `deleted_at`, `name`) VALUES
-    (now(), now(), NULL, 'Мвидео');
+INSERT INTO "shops" ("created_at", "updated_at", "deleted_at", "name") VALUES
+    (now(), now(), NULL, 'Мвидео'),
+    (now(), now(), NULL, 'ДНС');
 
-INSERT INTO `gifts` (`created_at`, `updated_at`, `deleted_at`, `name`, `gender`, `age_start`, `age_end`) VALUES
+INSERT INTO "gifts" ("created_at", "updated_at", "deleted_at", "name", "gender", "age_start", "age_end") VALUES
     (now(), now(), NULL, 'Смарт-часы Apple Watch SE GPS 44mm', 'unisex', '14', '65');
 
-INSERT INTO `gift_has_hobbies` (`gift_id`, `hobby_id`) VALUES
-    ('2', '92'),
-    ('2', '97');
+INSERT INTO "gift_has_hobbies" ("gift_id", "hobby_id") VALUES
+    ('1', '86'),
+    ('1', '91');
 
-INSERT INTO `images` (`created_at`, `updated_at`, `deleted_at`, `gift_id`, `url`) VALUES
-    (now(), now(), NULL, '2', 'https://img.mvideo.ru/Big/30059179bb.jpg'),
-    (now(), now(), NULL, '2', 'https://img.mvideo.ru/Big/30059179bb1.jpg'),
-    (now(), now(), NULL, '2', 'https://img.mvideo.ru/Big/30059179bb2.jpg');
+INSERT INTO "images" ("created_at", "updated_at", "deleted_at", "gift_id", "url") VALUES
+    (now(), now(), NULL, '1', 'https://img.mvideo.ru/Big/30059179bb.jpg'),
+    (now(), now(), NULL, '1', 'https://img.mvideo.ru/Big/30059179bb1.jpg'),
+    (now(), now(), NULL, '1', 'https://img.mvideo.ru/Big/30059179bb2.jpg');
 
-INSERT INTO `products` (`created_at`, `updated_at`, `deleted_at`, `gift_id`, `shop_id`, `name`, `price`, `url`) VALUES
-    (now(), now(), NULL, '2', '1', 'Смарт-часы Apple Watch SE GPS 44mm Gold Aluminium/Starlight Sport', '24990', 'https://www.mvideo.ru/products/smart-chasy-apple-watch-se-gps-44mm-gold-aluminium-starlight-sport-30059179'),
-    (now(), now(), NULL, '2', '2', 'Смарт-часы Apple Watch SE GPS 44mm', '24990', 'https://www.dns-shop.ru/product/6ecd119ff7c71b80/smart-casy-apple-watch-se-gps-44mm/');
+INSERT INTO "products" ("created_at", "updated_at", "deleted_at", "gift_id", "shop_id", "name", "price", "url") VALUES
+    (now(), now(), NULL, '1', '1', 'Смарт-часы Apple Watch SE GPS 44mm Gold Aluminium/Starlight Sport', '24990', 'https://www.mvideo.ru/products/smart-chasy-apple-watch-se-gps-44mm-gold-aluminium-starlight-sport-30059179'),
+    (now(), now(), NULL, '1', '2', 'Смарт-часы Apple Watch SE GPS 44mm', '24990', 'https://www.dns-shop.ru/product/6ecd119ff7c71b80/smart-casy-apple-watch-se-gps-44mm/');
 
