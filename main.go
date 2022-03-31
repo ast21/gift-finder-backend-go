@@ -3,18 +3,26 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/joho/godotenv"
 	"github.com/thoas/go-funk"
-	"gorm.io/driver/mysql"
+	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"log"
 	"net/http"
+	"os"
 	"strconv"
 	"strings"
 	"time"
 )
 
-var db, err = gorm.Open(mysql.New(mysql.Config{
-	DSN: "root:rootpass@tcp(127.0.0.1:3306)/gift-finder?charset=utf8&parseTime=True&loc=Local",
+var db, err = gorm.Open(postgres.New(postgres.Config{
+	DSN: fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
+		env("DB_HOST"),
+		env("DB_PORT"),
+		env("DB_USER"),
+		env("DB_PASS"),
+		env("DB_NAME"),
+	),
 }), &gorm.Config{})
 
 type GormModel struct {
@@ -66,6 +74,14 @@ type GiftRequestBody struct {
 	HobbyIds []int
 	Gender   string
 	Age      string
+}
+
+func env(key string) string {
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatalf("Error loading .env file")
+	}
+	return os.Getenv(key)
 }
 
 func handler(w http.ResponseWriter, r *http.Request) {
